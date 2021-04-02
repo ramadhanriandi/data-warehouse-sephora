@@ -1,0 +1,26 @@
+{
+  "name": "dwhstarbucks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "faker": "^5.4.0",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.5.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fata-nugraha/data-warehouse-starbucks.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fata-nugraha/data-warehouse-starbucks/issues"
+  },
+  "homepage": "https://github.com/fata-nugraha/data-warehouse-starbucks#readme"
+}
