@@ -1,21 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("./db.js");
-
-const InventoryFact = sequelize.define("inventory_fact", {
-    quantity_in: DataTypes.INTEGER,
-    quantity_out: DataTypes.INTEGER,
-    quantity_available: DataTypes.INTEGER,
-}, {
-    timestamps: false,
-});
-
-const LoyaltyFact = sequelize.define("loyalty_fact", {
-    transaction_number: DataTypes.STRING,
-    transaction_stars: DataTypes.INTEGER,
-    transaction_dollars: DataTypes.FLOAT,
-}, {
-    timestamps: false,
-});
+const sequelize = require("../db.js");
 
 const SalesFact = sequelize.define("sales_fact", {
     transaction_number: DataTypes.STRING,
@@ -27,71 +11,77 @@ const SalesFact = sequelize.define("sales_fact", {
     timestamps: false,
 });
 
-const SatisfactionFact = sequelize.define("satisfaction_fact", {
+const InventoryFact = sequelize.define("inventory_fact", {
+    quantity_in: DataTypes.INTEGER,
+    quantity_out: DataTypes.INTEGER,
+    quantity_available: DataTypes.INTEGER,
+    latest_restock_date: DataTypes.DATEONLY
+}, {
+    timestamps: false,
+});
+
+const RatingFact = sequelize.define("rating_fact", {
     transaction_number: DataTypes.STRING,
-    stars: DataTypes.INTEGER,
-    units_sold: DataTypes.INTEGER,
+    rating: DataTypes.FLOAT,
+    average_rating: DataTypes.FLOAT,
+    review: DataTypes.STRING,
 }, {
     timestamps: false,
 });
 
 const CustomerDimension = sequelize.define("customer_dimension", {
     birth_date: DataTypes.DATEONLY,
-    country: DataTypes.STRING,
-    is_received_marketing: DataTypes.BOOLEAN,
-    joined_date: DataTypes.DATEONLY,
+    gender: DataTypes.STRING,
+    birth_place: DataTypes.STRING,
+    marital_status: DataTypes.STRING,
+    address: DataTypes.STRING,
+    membership_level: DataTypes.STRING,
 }, {
     timestamps: false,
 });
 
-const DeliveryDimension = sequelize.define("delivery_dimension", {
-    name: DataTypes.STRING,
-    type: DataTypes.STRING,
-}, {
-    timestamps: false,
-});
-
-const ItemDimension = sequelize.define("item_dimension", {
-    name: DataTypes.STRING,
-    category: DataTypes.STRING,
-    sub_category: DataTypes.STRING,
-    unit_cost: DataTypes.FLOAT,
-}, {
-    timestamps: false,
-});
-
-const MediaDimension = sequelize.define("media_dimension", {
-    name: DataTypes.STRING,
-    type: DataTypes.STRING,
-}, {
-    timestamps: false,
-});
-
-const MembershipDimension = sequelize.define("membership_dimension", {
-    level_name: DataTypes.STRING,
-}, {
-    timestamps: false,
-});
-
-const PaymentDimension = sequelize.define("payment_dimension", {
-    name: DataTypes.STRING,
-    type: DataTypes.STRING,
+const DateDimension = sequelize.define("date_dimension", {
+    date: DataTypes.DATEONLY,
+    day: DataTypes.STRING,
+    day_of_week: DataTypes.STRING,
+    month: DataTypes.STRING,
+    quarter: DataTypes.INTEGER,
+    year: DataTypes.INTEGER,
+    is_holiday: DataTypes.BOOLEAN,
+    is_weekend: DataTypes.BOOLEAN,
+    is_restock_day: DataTypes.BOOLEAN,
 }, {
     timestamps: false,
 });
 
 const ProductDimension = sequelize.define("product_dimension", {
     name: DataTypes.STRING,
+    brand: DataTypes.STRING,
     category: DataTypes.STRING,
-    sub_category: DataTypes.STRING,
-    unit_price: DataTypes.FLOAT,
-    unit_cost: DataTypes.FLOAT,
+    package_type: DataTypes.STRING,
+    package_size: DataTypes.INTEGER,
+    weight: DataTypes.FLOAT,
+    cost_per_unit: DataTypes.FLOAT,
+    price_per_unit: DataTypes.FLOAT,
+    expired_date: DataTypes.DATEONLY,
+}, {
+    timestamps: false,
+});
+
+const OutletDimension = sequelize.define("outlet_dimension", {
+    branch_manager_id: DataTypes.INTEGER,
+    name: DataTypes.STRING,
+    type: DataTypes.STRING,
+    address: DataTypes.STRING,
+    city: DataTypes.STRING,
+    province: DataTypes.STRING,
+    country: DataTypes.STRING,
 }, {
     timestamps: false,
 });
 
 const PromotionDimension = sequelize.define("promotion_dimension", {
-    name: DataTypes.STRING,
+    title: DataTypes.STRING,
     start_date: DataTypes.DATEONLY,
     end_date: DataTypes.DATEONLY,
     type: DataTypes.STRING,
@@ -100,81 +90,57 @@ const PromotionDimension = sequelize.define("promotion_dimension", {
     timestamps: false,
 });
 
-const OutletDimension = sequelize.define("outlet_dimension", {
-    name: DataTypes.STRING,
-    location_name: DataTypes.STRING,
-    city: DataTypes.STRING,
-    country: DataTypes.STRING,
-}, {
-    timestamps: false,
-});
-
-const SupplierDimension = sequelize.define("supplier_dimension", {
-    name: DataTypes.STRING,
-    city: DataTypes.STRING,
-    country: DataTypes.STRING,
-}, {
-    timestamps: false,
-});
-
-const TimeDimension = sequelize.define("time_dimension", {
-    date: DataTypes.DATEONLY,
-    day: DataTypes.INTEGER,
-    month: DataTypes.INTEGER,
-    year: DataTypes.INTEGER,
-    day_name: DataTypes.STRING,
-    is_holiday: DataTypes.BOOLEAN,
-    is_weekend: DataTypes.BOOLEAN,
-}, {
-    timestamps: false,
-});
-
 const WarehouseDimension = sequelize.define("warehouse_dimension", {
     name: DataTypes.STRING,
-    location_name: DataTypes.STRING,
+    type: DataTypes.STRING,
+    address: DataTypes.STRING,
     city: DataTypes.STRING,
+    province: DataTypes.STRING,
     country: DataTypes.STRING,
+    capacity: DataTypes.INTEGER,
+    warehouse_manager_id: DataTypes.INTEGER,
 }, {
     timestamps: false,
 });
 
-InventoryFact.belongsTo(TimeDimension, { foreignKey: "time_id" });
-InventoryFact.belongsTo(ItemDimension, { foreignKey: "item_id" });
-InventoryFact.belongsTo(WarehouseDimension, { foreignKey: "warehouse_id" });
-InventoryFact.belongsTo(SupplierDimension, { foreignKey: "supplier_id" });
+const VendorDimension = sequelize.define("vendor_dimension", {
+    name: DataTypes.STRING,
+    type: DataTypes.STRING,
+    address: DataTypes.STRING,
+    city: DataTypes.STRING,
+    province: DataTypes.STRING,
+    country: DataTypes.STRING,
+    capacity: DataTypes.INTEGER,
+    PIC: DataTypes.STRING,
+}, {
+    timestamps: false,
+});
 
-LoyaltyFact.belongsTo(TimeDimension, { foreignKey: "time_id" });
-LoyaltyFact.belongsTo(CustomerDimension, { foreignKey: "customer_id" });
-LoyaltyFact.belongsTo(MembershipDimension, { foreignKey: "membership_id" });
-LoyaltyFact.belongsTo(OutletDimension, { foreignKey: "outlet_id" });
-
-SalesFact.belongsTo(TimeDimension, { foreignKey: "time_id" });
+SalesFact.belongsTo(DateDimension, { foreignKey: "date_id" });
 SalesFact.belongsTo(ProductDimension, { foreignKey: "product_id" });
 SalesFact.belongsTo(OutletDimension, { foreignKey: "outlet_id" });
-SalesFact.belongsTo(PaymentDimension, { foreignKey: "payment_id" });
+SalesFact.belongsTo(CustomerDimension, { foreignKey: "customer_id" });
 SalesFact.belongsTo(PromotionDimension, { foreignKey: "promotion_id" });
-SalesFact.belongsTo(DeliveryDimension, { foreignKey: "delivery_id" });
 
-SatisfactionFact.belongsTo(TimeDimension, { foreignKey: "time_id" });
-SatisfactionFact.belongsTo(ProductDimension, { foreignKey: "product_id" });
-SatisfactionFact.belongsTo(OutletDimension, { foreignKey: "outlet_id" });
-SatisfactionFact.belongsTo(MediaDimension, { foreignKey: "media_id" });
+InventoryFact.belongsTo(DateDimension, { foreignKey: "date_id" });
+InventoryFact.belongsTo(ProductDimension, { foreignKey: "product_id" });
+InventoryFact.belongsTo(WarehouseDimension, { foreignKey: "warehouse_id" });
+InventoryFact.belongsTo(VendorDimension, { foreignKey: "vendor_id" });
+
+
+RatingFact.belongsTo(DateDimension, { foreignKey: "date_id" });
+RatingFact.belongsTo(ProductDimension, { foreignKey: "product_id" });
+RatingFact.belongsTo(CustomerDimension, { foreignKey: "customer_id" });
 
 module.exports = {
-    InventoryFact,
-    LoyaltyFact,
     SalesFact,
-    SatisfactionFact,
+    InventoryFact,
+    RatingFact,
     CustomerDimension,
-    DeliveryDimension,
-    ItemDimension,
-    MediaDimension,
-    MembershipDimension,
-    PaymentDimension,
+    DateDimension,
     ProductDimension,
-    PromotionDimension,
     OutletDimension,
-    SupplierDimension,
-    TimeDimension,
+    PromotionDimension,
     WarehouseDimension,
+    VendorDimension,
 };

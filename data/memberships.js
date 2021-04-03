@@ -1,3 +1,3 @@
-const MEMBERSHIPS = ["Green", "Gold"];
+const MEMBERSHIPS = ["Silver", "Gold", "Platinum"];
 
 module.exports = MEMBERSHIPS;
