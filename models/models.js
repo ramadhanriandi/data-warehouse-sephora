@@ -42,7 +42,7 @@ const CustomerDimension = sequelize.define("customer_dimension", {
 
 const DateDimension = sequelize.define("date_dimension", {
     date: DataTypes.DATEONLY,
-    day: DataTypes.STRING,
+    day: DataTypes.INTEGER,
     day_of_week: DataTypes.STRING,
     month: DataTypes.STRING,
     quarter: DataTypes.INTEGER,

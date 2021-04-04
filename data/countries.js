@@ -9,10 +9,10 @@ const COUNTRIES = [
 
 const CITIES_BY_COUNTRY = {
   "Indonesia": ["Jakarta", "Surabaya", "Bandung"],
-  "United States": ["Los Angeles", "Chicago", "San Jose", "Las Vegas"],
-  "Canada": ["Toronto", "Montreal"],
+  "United States": ["Los Angeles", "Chicago", "San Jose"],
+  "Canada": ["Toronto", "Montreal", "Vancouver"],
   "Japan": ["Tokyo", "Osaka", "Nagoya"],
-  "South Korea": ["Seoul", "Busan"],
+  "South Korea": ["Seoul", "Busan", "Incheon"],
   "United Kingdom": ["London", "Manchester", "Liverpool"],
 };
 
