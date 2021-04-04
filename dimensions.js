@@ -1,18 +1,18 @@
 require('dotenv').config();
 const faker = require('faker');
-const sequelize = require('../db');
-const models = require('../models/models');
+const sequelize = require('./db');
+const models = require('./models');
 
-const { COUNTRIES, CITIES_BY_COUNTRY } = require('../data/countries');
-const GENDER = require('../data/gender');
-const MARITAL_STATUS = require('../data/marital_status');
-const MEMBERSHIPS = require('../data/memberships');
-const PRODUCTS = require('../data/products');
-const PROMOTIONS = require('../data/promotions');
-const { DAY_NAMES, MONTH_NAMES } = require('../data/times');
-const OUTLETS = require('../data/outlets');
-const WAREHOUSES = require('../data/warehouses');
-const VENDORS = require('../data/vendors');
+const { CITIES_BY_COUNTRY } = require('./data/countries');
+const GENDER = require('./data/gender');
+const MARITAL_STATUS = require('./data/marital_status');
+const MEMBERSHIPS = require('./data/memberships');
+const PRODUCTS = require('./data/products');
+const PROMOTIONS = require('./data/promotions');
+const { DAY_NAMES, MONTH_NAMES } = require('./data/times');
+const OUTLETS = require('./data/outlets');
+const WAREHOUSES = require('./data/warehouses');
+const VENDORS = require('./data/vendors');
 
 (async () => {
         await sequelize.drop();
@@ -29,29 +29,31 @@ const VENDORS = require('../data/vendors');
                         address: CITIES_BY_COUNTRY[COUNTRY[country][faker.datatype.number({max: 2})]] + "," + COUNTRY[country],
                         membership_level: MEMBERSHIPS[faker.datatype.number({max: 2})]
                 });
-                await customer.save();
-                await console.log("done");
+                customer.save();
+                console.log("done");
         }
 
         // DATE DIMENSION
         for (let currDate = new Date("2020"); currDate <= new Date(2020,3,31); currDate.setDate(currDate.getDate() + 1)) {
-                const newTime = new Date(currDate);
-        
-                let timeDimension = models.TimeDimension.build({
-                        date: newTime,
-                        day: newTime.getDate(),
-                        day_of_week: DAY_NAMES[newTime.getDay()],
-                        month: MONTH_NAMES[newTime.getMonth()],
-                        quarter: Math.ceil((newTime.getMonth() + 1)/4),
-                        year: newTime.getFullYear(),
-                        is_holiday: faker.datatype.number({ max: 100 }) % 11 === 0,
-                        is_weekend: newTime.getDay() === 5 || newTime.getDay() === 6,
-                        is_restock_day: newTime.getDay() === 3
-                        });
-        
-                await timeDimension.save();
-                await console.log("done");
-            }
+                
+                (async () => {
+                        const newTime = new Date(currDate);
+
+                        let dateDimension = models.DateDimension.build({
+                                date: newTime,
+                                day: newTime.getDate(),
+                                day_of_week: DAY_NAMES[newTime.getDay()],
+                                month: MONTH_NAMES[newTime.getMonth()],
+                                quarter: Math.ceil((newTime.getMonth() + 1)/4),
+                                year: newTime.getFullYear(),
+                                is_holiday: faker.datatype.number({ max: 100 }) % 11 === 0,
+                                is_weekend: newTime.getDay() === 5 || newTime.getDay() === 6,
+                                is_restock_day: newTime.getDay() === 3
+                                });
+
+                        await dateDimension.save();
+                })();
+        }
 
         // PRODUCT DIMENSION
         PRODUCTS.forEach(async (data) => {
@@ -151,4 +153,4 @@ const VENDORS = require('../data/vendors');
                         await console.log('done');
                 })
         })
-})
+})();

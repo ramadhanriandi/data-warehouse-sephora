@@ -1,5 +1,6 @@
+require('dotenv').config();
 const { DataTypes } = require("sequelize");
-const sequelize = require("../db.js");
+const sequelize = require("./db");
 
 const SalesFact = sequelize.define("sales_fact", {
     transaction_number: DataTypes.STRING,
@@ -126,7 +127,6 @@ InventoryFact.belongsTo(DateDimension, { foreignKey: "date_id" });
 InventoryFact.belongsTo(ProductDimension, { foreignKey: "product_id" });
 InventoryFact.belongsTo(WarehouseDimension, { foreignKey: "warehouse_id" });
 InventoryFact.belongsTo(VendorDimension, { foreignKey: "vendor_id" });
-
 
 RatingFact.belongsTo(DateDimension, { foreignKey: "date_id" });
 RatingFact.belongsTo(ProductDimension, { foreignKey: "product_id" });
