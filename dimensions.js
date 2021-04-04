@@ -3,7 +3,7 @@ const faker = require('faker');
 const sequelize = require('./db');
 const models = require('./models');
 
-const { CITIES_BY_COUNTRY } = require('./data/countries');
+const { COUNTRIES, CITIES_BY_COUNTRY } = require('./data/countries');
 const GENDER = require('./data/gender');
 const MARITAL_STATUS = require('./data/marital_status');
 const MEMBERSHIPS = require('./data/memberships');
@@ -24,16 +24,16 @@ const VENDORS = require('./data/vendors');
                 let customer = models.CustomerDimension.build({
                         birth_date: faker.date.between(new Date("1970"), new Date("2003")),
                         gender: GENDER[faker.datatype.number({max: 1})],
-                        birth_place: CITIES_BY_COUNTRY[COUNTRY[country]][faker.datatype.number({max: 2})],
+                        birth_place: CITIES_BY_COUNTRY[COUNTRIES[country]][faker.datatype.number({max: 2})],
                         marital_status: MARITAL_STATUS[faker.datatype.number({max: 1})],
-                        address: CITIES_BY_COUNTRY[COUNTRY[country][faker.datatype.number({max: 2})]] + "," + COUNTRY[country],
+                        address: CITIES_BY_COUNTRY[COUNTRIES[country]][faker.datatype.number({max: 2})] + ", " + COUNTRIES[country],
                         membership_level: MEMBERSHIPS[faker.datatype.number({max: 2})]
                 });
                 customer.save();
                 console.log("done");
         }
 
-        // DATE DIMENSION
+        // // DATE DIMENSION
         for (let currDate = new Date("2020"); currDate <= new Date(2020,3,31); currDate.setDate(currDate.getDate() + 1)) {
                 
                 (async () => {
@@ -76,21 +76,33 @@ const VENDORS = require('./data/vendors');
                 })();
         });
 
+        let outlet = models.OutletDimension.build({
+                branch_manager_id: OUTLETS[0].branch_manager_id,
+                name: OUTLETS[0].name,
+                type: OUTLETS[0].type,
+                address: OUTLETS[0].address,
+                city: OUTLETS[0].city,
+                province: OUTLETS[0].province,
+                country: OUTLETS[0].country,
+        })
+        await outlet.save();
+        
         // OUTLET DIMENSION
-        OUTLETS.forEach(async (data) => {
+        OUTLETS.forEach(async (data_outlet) => {
                 (async () => {
+                        await console.log(data_outlet);
                         let outlet = models.OutletDimension.build({
-                                branch_manager_id: data.branch_manager_id,
-                                name: data.name,
-                                type: data.type,
-                                address: data.address,
-                                city: data.city,
-                                province: data.province,
-                                country: data.country,
+                                branch_manager_id: data_outlet.branch_manager_id,
+                                name: data_outlet.name,
+                                type: data_outlet.type,
+                                address: data_outlet.address,
+                                city: data_outlet.city,
+                                province: data_outlet.province,
+                                country: data_outlet.country,
                         })
                         await outlet.save();
                         await console.log('done');
-                })
+                })();
         })
 
         // PROMOTION DIMENSION
@@ -113,7 +125,7 @@ const VENDORS = require('./data/vendors');
                         start_date: startDate,
                         end_date: endDate,
                         type: PROMOTIONS[faker.datatype.number({ max: PROMOTIONS.length - 1 })],
-                        discount: promotionType === "FREE" ? 100 : faker.random.number({ min: 5, max: 99, precision: 5 })
+                        discount: promotionType === "FREE" ? 100 : faker.datatype.number({ min: 5, max: 99, precision: 5 })
                 });
                 await promotion.save();
         }
@@ -121,7 +133,7 @@ const VENDORS = require('./data/vendors');
         // WAREHOUSE DIMENSION
         WAREHOUSES.forEach(async (data) => {
                 (async () => {
-                        let warehouse = models.OutletDimension.build({
+                        let warehouse = models.WarehouseDimension.build({
                                 name: data.name,
                                 type: data.type,
                                 address: data.address,
@@ -133,13 +145,13 @@ const VENDORS = require('./data/vendors');
                         })
                         await warehouse.save();
                         await console.log('done');
-                })
+                })();
         })
 
         // VENDOR DIMENSION
         VENDORS.forEach(async (data) => {
                 (async () => {
-                        let vendor = models.OutletDimension.build({
+                        let vendor = models.VendorDimension.build({
                                 name: data.name,
                                 type: data.type,
                                 address: data.address,
@@ -147,10 +159,10 @@ const VENDORS = require('./data/vendors');
                                 province: data.province,
                                 country: data.country,
                                 capacity: data.capacity,
-                                warehouse_manager_id: data.branch_manager_id,
+                                PIC: data.PIC,
                         })
                         await vendor.save();
                         await console.log('done');
-                })
+                })();
         })
 })();
