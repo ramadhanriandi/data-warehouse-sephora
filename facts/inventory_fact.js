@@ -1,51 +1,54 @@
 require('dotenv').config();
 const faker = require('faker');
-const models = require('./models');
+const models = require('../models');
 
 const findInventoryDimensions = async () => {
-    const items = await models.ItemDimension.findAll({ attributes: ["id"] });
-    const times = await models.TimeDimension.findAll({ attributes: ["id"] });
-    const warehouses = await models.WarehouseDimension.findAll({ attributes: ["id", "city"] });
-    const suppliers = await models.SupplierDimension.findAll({ attributes: ["id", "city"] });
+    const dates = await models.DateDimension.findAll({ attributes: ["id", "date"] });
+    const products = await models.ProductDimension.findAll({ attributes: ["id"] });
+    const warehouses = await models.WarehouseDimension.findAll({ attributes: ["id"] });
+    const vendors = await models.VendorDimension.findAll({ attributes: ["id"] });
 
-    return { items, times, warehouses, suppliers };
+    return { products, dates, warehouses, vendors };
 };
 
 (async () => {
     // INVENTORY FACT
     await models.InventoryFact.sync({ force: true });
+
     await findInventoryDimensions().then((inventoryDimensions) => {
-        const { items, times, warehouses, suppliers } = inventoryDimensions;
+        const { products, dates, warehouses, vendors } = inventoryDimensions;
 
         warehouses.forEach((warehouse) => {
-            const sameCitySuppliers = suppliers.filter((supplier) => {
-                return supplier.city === warehouse.city;
-            });
             (async () => {
-                for (let itemId = 1; itemId <= items.length; itemId++) {
+                for (let productId = 1; productId <= products.length; productId++) {
                     let quantityAvailable = await faker.random.number({ max: 1000 });
+                    
+                    let latestRestockDate = dates[0].date;
 
-                    for (let timeId = 1; timeId <= times.length; timeId++) {
+                    for (let dateId = 1; dateId <= dates.length; dateId++) {
                         let quantityIn = await faker.random.number({ max: 100 });
                         let quantityOut = await faker.random.number({ max: quantityAvailable });
                         quantityAvailable += (quantityIn - quantityOut);
 
+                        if (quantityIn > 0) {
+                            latestRestockDate = dates[dateId - 1].date;
+                        }
+
                         let inventory = models.InventoryFact.build({
-                            time_id: timeId,
-                            item_id: itemId,
+                            date_id: dateId,
+                            product_id: productId,
                             warehouse_id: warehouse.id,
-                            supplier_id: sameCitySuppliers[faker.random.number({ max: sameCitySuppliers.length - 1 })].id,
+                            vendor_id: vendors[faker.random.number({ max: vendors.length - 1 })].id,
                             quantity_in: quantityIn,
                             quantity_out: quantityOut,
                             quantity_available: quantityAvailable,
+                            latest_restock_date: latestRestockDate,
                         });
+
                         await inventory.save();
                     }
-                    await console.log(itemId);
                 }
-                await console.log(warehouse);
             })();
         });
     })
-    await console.log("done");
 })();
